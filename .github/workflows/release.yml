@@ -6,7 +6,7 @@ on:
       version:
         description: Semantic version tag to release
         required: true
-        default: v1.0.1
+        default: v1.0.0
   push:
     branches:
       - main
@@ -36,7 +36,7 @@ jobs:
           elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             version="${GITHUB_REF_NAME}"
           else
-            version="v1.0.1"
+            version="v1.0.0"
           fi
 
           if [[ ! "${version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
