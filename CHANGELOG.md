@@ -4,6 +4,20 @@ All notable user-facing changes to 360° Output Auditor are documented here.
 
 The project follows Semantic Versioning.
 
+## [1.0.1] - 2026-09-22
+
+### Fixed
+
+- Switched the repository license file to canonical MIT text so GitHub detects the SPDX license correctly.
+- Fixed release-note rendering so filenames and SHA-256 values are preserved.
+- Fixed release publishing so an existing release refreshes `skill.zip` and `SHA256SUMS.txt` together, preventing checksum/asset drift.
+- Added stable latest-release and direct package/checksum links to the README.
+
+### Changed
+
+- Release automation now supports repeatable packaging for semantic-version tags and manual release dispatches.
+- No runtime 360° Output Auditor logic changed in this release.
+
 ## [1.0.0] - 2026-09-22
 
 ### Added

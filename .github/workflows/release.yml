@@ -6,7 +6,7 @@ on:
       version:
         description: Semantic version tag to release
         required: true
-        default: v1.0.0
+        default: v1.0.1
   push:
     branches:
       - main
@@ -36,7 +36,7 @@ jobs:
           elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             version="${GITHUB_REF_NAME}"
           else
-            version="v1.0.0"
+            version="v1.0.1"
           fi
 
           if [[ ! "${version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -118,23 +118,27 @@ jobs:
           cat > /tmp/release-notes.md <<EOF
           # 360° Output Auditor ${version}
 
-          Initial stable public release of the evidence-first second-pass audit Skill.
+          Stable public release of the evidence-first second-pass audit Skill.
 
           ## Included
 
           - canonical \`SKILL.md\` control plane;
           - Skill Creator-compatible agent metadata and icon;
           - all 11 progressive domain references;
-          - corrected complete trigger description;
+          - complete trigger description;
           - installable \`skill.zip\`;
           - SHA-256 checksum file.
 
           **skill.zip SHA-256:** \`${sha256}\`
 
-          See \`CHANGELOG.md\` for the detailed release contents.
+          See \`CHANGELOG.md\` for detailed release changes.
           EOF
 
           if gh release view "${version}" >/dev/null 2>&1; then
+            gh release upload "${version}" \
+              dist/skill.zip \
+              dist/SHA256SUMS.txt \
+              --clobber
             gh release edit "${version}" \
               --title "360° Output Auditor ${version}" \
               --notes-file /tmp/release-notes.md
@@ -146,28 +150,3 @@ jobs:
               --title "360° Output Auditor ${version}" \
               --notes-file /tmp/release-notes.md
           fi
-
-      - name: Polish repository metadata
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh api --method PATCH "repos/${GITHUB_REPOSITORY}" \
-            -f description='Evidence-first ChatGPT Skill for independently auditing, verifying, correcting, and revalidating AI outputs and completed tool work.'
-
-          gh api --method PUT "repos/${GITHUB_REPOSITORY}/topics" \
-            --input - <<'JSON'
-          {
-            "names": [
-              "chatgpt",
-              "openai",
-              "skills",
-              "ai-audit",
-              "verification",
-              "quality-assurance",
-              "agent-skills"
-            ]
-          }
-          JSON
