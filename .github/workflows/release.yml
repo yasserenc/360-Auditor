@@ -6,14 +6,10 @@ on:
       version:
         description: Semantic version tag to release
         required: true
-        default: v1.0.0
+        default: v1.0.2
   push:
-    branches:
-      - main
     tags:
       - 'v*'
-    paths:
-      - '.github/workflows/release.yml'
 
 permissions:
   contents: write
@@ -36,7 +32,7 @@ jobs:
           elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             version="${GITHUB_REF_NAME}"
           else
-            version="v1.0.0"
+            version="${GITHUB_REF_NAME}"
           fi
 
           if [[ ! "${version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
