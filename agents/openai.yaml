@@ -1,0 +1,15 @@
+interface:
+  display_name: 360° Output Auditor
+  short_description: Audit and revalidate AI outputs and completed work
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+  default_prompt: Use $output-auditor to independently audit the target, verify material
+    claims and end state where possible, correct justified defects, regression-check
+    the result, and return the revalidated final output.
+policy:
+  allow_implicit_invocation: true
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
