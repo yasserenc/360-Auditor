@@ -4,7 +4,9 @@ Independently audit, verify, correct, and revalidate an existing AI-produced out
 
 ## Install
 
-Use this repository as the canonical source for the Skill. The Skill files are at repository root.
+Download **`skill.zip`** from this repository for the validated installable package.
+
+The canonical Skill source is also included at repository root (`SKILL.md`, `agents/`, `assets/`, and `references/`).
 
 ## Typical use
 
