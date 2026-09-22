@@ -101,6 +101,12 @@ Optional improvements alone do not downgrade a PASS.
 
 ## Installation / reuse
 
+### Download the stable package
+
+- [Latest GitHub release](https://github.com/yasserenc/360-Auditor/releases/latest)
+- [Download latest `skill.zip`](https://github.com/yasserenc/360-Auditor/releases/latest/download/skill.zip)
+- [Download SHA-256 checksum](https://github.com/yasserenc/360-Auditor/releases/latest/download/SHA256SUMS.txt)
+
 The canonical Skill source is stored at repository root.
 
 Required Skill files:
