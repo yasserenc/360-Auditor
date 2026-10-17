@@ -36,13 +36,27 @@ def validate(root: Path, archive: Path) -> None:
     if not gold_path.is_file():
         raise AcceptanceBlocked("missing canonical gold corpus")
     gold_data = json.loads(gold_path.read_text(encoding="utf-8"))
-    gold_cases = {
-        x["id"]: x for x in gold_data.get("cases", [])
-        if isinstance(x, dict) and re.fullmatch(r"E(?:0[1-9]|1[0-8])", x.get("id", ""))
-    }
+    if not isinstance(gold_data, dict):
+        raise AcceptanceBlocked("invalid gold corpus document")
+    # Check the complete preregistered collection *before* converting it to
+    # a dictionary. A dictionary silently replaces duplicate IDs.
+    gold_rows = gold_data.get("cases")
+    expected_corpus_ids = (
+        {f"E{i:02d}" for i in range(1, 23)}
+        | {f"V{i:02d}" for i in range(1, 5)}
+    )
+    if not isinstance(gold_rows, list) or any(
+        not isinstance(x, dict) or not isinstance(x.get("id"), str)
+        for x in gold_rows
+    ):
+        raise AcceptanceBlocked("invalid gold corpus records")
+    gold_ids = [x["id"] for x in gold_rows]
+    if (len(gold_ids) != len(expected_corpus_ids)
+            or len(set(gold_ids)) != len(gold_ids)
+            or set(gold_ids) != expected_corpus_ids):
+        raise AcceptanceBlocked("duplicate or incomplete gold corpus IDs")
     expected_ids = {f"E{i:02d}" for i in range(1, 19)}
-    if set(gold_cases) != expected_ids:
-        raise AcceptanceBlocked("E01-E18 gold corpus missing or duplicated")
+    gold_cases = {x["id"]: x for x in gold_rows if x["id"] in expected_ids}
     recorded = result.get("cases", [])
     if not isinstance(recorded, list) or len(recorded) != 18 or any(not isinstance(x, dict) for x in recorded):
         raise AcceptanceBlocked("all E01-E18 matched baseline/candidate records required")
