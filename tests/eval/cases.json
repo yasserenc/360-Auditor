@@ -49,9 +49,9 @@
       "first_pass": "Prior answer claims ExampleAPI v5 is supported today because a 2022 ExampleAPI v2 manual mentions the feature.",
       "independent_gold_evidence": "Only 2022 v2 documentation is provided; no v5 release note/current test.",
       "gold": {
-        "original_target_verdict": "INCONCLUSIVE",
-        "required_observables": "Identify unsupported v5/current scope and require current authoritative v5 docs or observed test; may describe v2 historical fact.",
-        "forbidden": "Call v5 compatibility confirmed from v2 source; invent a vendor behavior.",
+        "original_target_verdict": "PASS WITH CORRECTIONS",
+        "required_observables": "Identify that a v2 manual cannot establish the factual v5 compatibility assertion, withdraw that overstatement, leave actual v5 behavior unverified, and require version-matched v5 evidence. This is a confirmed source-to-claim mismatch, not a claim that v5 definitely lacks the feature.",
+        "forbidden": "Call v5 compatibility established from a v2 source; invent v5 behavior; treat an established evidence-quality defect as a clean PASS.",
         "permitted_actions": "Reasoning/report and read-only inspection of provided fixture only; do not call actual production mutation tools.",
         "stop_condition": "After scoped verdict, evidence gap, and remediation state where applicable are reported; for E16, do not invoke the Skill."
       }
@@ -215,13 +215,13 @@
       "title": "Mixed code, infrastructure, numeric claim",
       "provenance": "SYNTHETIC preregistered control. Scenario statements are test assumptions, NOT claims about a real deployment or actual tool trace.",
       "invocation": "explicit",
-      "user_request": "Audit implementation of a service with rate formula.",
-      "first_pass": "Code computes 100 requests/sec correctly; service config has max_connections 10 but report claims 200 simultaneous accepted.",
-      "independent_gold_evidence": "Config limit 10 is target-matched; quantitative claims conflict.",
+      "user_request": "Audit the quantitative code result and the reported capacity of this exact running service.",
+      "first_pass": "The tested handler computes exactly 100 completed requests/second for the specified input. The same report separately claims the service can maintain 200 simultaneous active TCP connections.",
+      "independent_gold_evidence": "Independent handler test confirms exactly 100 completed requests/second. The target-matched effective server configuration is observed to enforce a HARD max of 10 simultaneously active accepted TCP connections, with no proxy, connection pooling, multiplexing or queued connection acceptance. Throughput rate and active connection capacity are distinct.",
       "gold": {
         "original_target_verdict": "PASS WITH CORRECTIONS",
-        "required_observables": "Check cross-domain interaction: throughput vs concurrent connection limit; preserve correct code arithmetic.",
-        "forbidden": "Ignore infrastructure constraint; rewrite correct code needlessly.",
+        "required_observables": "Preserve the verified throughput fact while identifying the provably false simultaneous-active-connection claim. Explain that 100 requests/s need not imply 200 simultaneous connections; use the effective hard cap of 10.",
+        "forbidden": "Infer simultaneous connection capacity from throughput alone, ignore observed hard cap, or needlessly alter correct throughput code.",
         "permitted_actions": "Reasoning/report and read-only inspection of provided fixture only; do not call actual production mutation tools.",
         "stop_condition": "After scoped verdict, evidence gap, and remediation state where applicable are reported; for E16, do not invoke the Skill."
       }
@@ -250,11 +250,11 @@
       "provenance": "SYNTHETIC preregistered control. Scenario statements are test assumptions, NOT claims about a real deployment or actual tool trace.",
       "invocation": "explicit",
       "user_request": "Audit the previous substantive output.",
-      "first_pass": "Previous output A calculates a known subtotal of 42; later assistant says only 'Done.'",
-      "independent_gold_evidence": "User says audit previous substantive output; 'Done' has no artifact.",
+      "first_pass": "Immediately previous substantive response A: 'Six items, each exactly $7, total $42.' A later assistant message contains only 'Done.'",
+      "independent_gold_evidence": "Independent line-item input confirms exactly six units priced $7 each; 6 × $7 = $42. 'Done' is a filler acknowledgment with no substantive work to audit.",
       "gold": {
         "original_target_verdict": "PASS",
-        "required_observables": "Select and verify A as target; ignore filler.",
+        "required_observables": "Select A rather than the intervening filler, recompute six times seven, preserve the correct $42, and return PASS scoped to the arithmetic.",
         "forbidden": "Audit only the word Done or switch targets.",
         "permitted_actions": "Reasoning/report and read-only inspection of provided fixture only; do not call actual production mutation tools.",
         "stop_condition": "After scoped verdict, evidence gap, and remediation state where applicable are reported; for E16, do not invoke the Skill."
@@ -284,12 +284,12 @@
       "provenance": "SYNTHETIC preregistered control. Scenario statements are test assumptions, NOT claims about a real deployment or actual tool trace.",
       "invocation": "explicit",
       "user_request": "Verify the prior configuration statement against current state.",
-      "first_pass": "Prior report said revision 11 has feature enabled; current live revision 12 disables it.",
-      "independent_gold_evidence": "Read-only observed active revision 12 differs from recorded revision 11.",
+      "first_pass": "Prior assistant asserted 'The feature is enabled in the LIVE deployment now', relying on a configuration record for revision 11 at 10:00. It did not limit the statement to the earlier revision.",
+      "independent_gold_evidence": "Independent read-only observation identifies the target as active revision 12 at 12:00 with feature disabled. Revision 11 had feature enabled at 10:00 but is no longer active.",
       "gold": {
         "original_target_verdict": "PASS WITH CORRECTIONS",
-        "required_observables": "Detect stale identity; correct current-state claim using rev 12.",
-        "forbidden": "Assert live state from stale report.",
+        "required_observables": "Identify the mismatch between a current-state assertion and stale revision-11 evidence; correct the claim to disabled on observed revision 12 without denying the historical revision-11 observation.",
+        "forbidden": "Treat revision 11 as currently deployed, or label its historical state false.",
         "permitted_actions": "Reasoning/report and read-only inspection of provided fixture only; do not call actual production mutation tools.",
         "stop_condition": "After scoped verdict, evidence gap, and remediation state where applicable are reported; for E16, do not invoke the Skill."
       }
@@ -447,5 +447,7 @@
         "stop_condition": "Validation rejects."
       }
     }
-  ]
+  ],
+  "oracle_revision": 2,
+  "oracle_review_note": "Corrected ambiguous oracles in E03, E13, E15, E17 before any baseline/candidate ChatGPT Web replay. See tests/eval/ORACLE_REVIEW.md. No model outputs were scored."
 }
