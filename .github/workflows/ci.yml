@@ -1,0 +1,47 @@
+name: Validate Skill and regression controls
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'fix/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout untrusted branch without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install pinned validation dependency
+        run: python -m pip install --disable-pip-version-check 'PyYAML==6.0.3'
+
+      - name: Validate real source bundle schema and reference closure
+        run: python scripts/skill_bundle.py check
+
+      - name: Execute deterministic security and packaging tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Build verified deterministic skill archive
+        run: |
+          python scripts/skill_bundle.py build
+          python scripts/skill_bundle.py verify
+          (cd dist && sha256sum -c SHA256SUMS.txt)
+
+      - name: Upload unapproved candidate for manual host evaluations
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: auditor-candidate-${{ github.sha }}
+          path: |
+            dist/skill.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
