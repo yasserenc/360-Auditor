@@ -107,6 +107,25 @@ class BundleChecks(unittest.TestCase):
         with self.assertRaises(ValidationError):
             verify_archive(self.root, self.archive)
 
+    def test_oversized_archive_member_rejected_before_decompression(self):
+        from unittest.mock import patch
+        from zipfile import ZipInfo
+
+        files = validate_tree(self.root)
+        self.archive.parent.mkdir(parents=True, exist_ok=True)
+        with ZipFile(self.archive, "w", compression=ZIP_DEFLATED) as z:
+            for rel, content in files.items():
+                info = ZipInfo("output-auditor/" + rel, date_time=(1980, 1, 1, 0, 0, 0))
+                info.create_system = 3
+                info.external_attr = 0o100644 << 16
+                info.compress_type = ZIP_DEFLATED
+                if rel == "SKILL.md":
+                    content = b"A" * (26 * 1024 * 1024)
+                z.writestr(info, content, compress_type=ZIP_DEFLATED, compresslevel=9)
+        with patch.object(ZipFile, "read", side_effect=AssertionError("read before checking ZIP size")):
+            with self.assertRaisesRegex(ValidationError, "uncompressed size mismatch"):
+                verify_archive(self.root, self.archive)
+
     def test_symlinked_asset_directory_rejected(self):
         assets = self.root / "assets"
         external = Path(self.temp.name) / "external-assets"
