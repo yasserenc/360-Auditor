@@ -92,6 +92,14 @@ class BundleChecks(unittest.TestCase):
         with self.assertRaises(ValidationError):
             verify_archive(self.root, self.archive)
 
+    def test_symlinked_asset_directory_rejected(self):
+        assets = self.root / "assets"
+        external = Path(self.temp.name) / "external-assets"
+        shutil.move(str(assets), str(external))
+        assets.symlink_to(external, target_is_directory=True)
+        with self.assertRaises(ValidationError):
+            validate_tree(self.root)
+
     def test_symlinked_bundle_member_rejected(self):
         file = self.root / "references" / "quantitative.md"
         file.unlink()
