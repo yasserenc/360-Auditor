@@ -17,7 +17,7 @@ import yaml
 
 ROOT_NAME = "output-auditor"
 MAX_BYTES = 25 * 1024 * 1024
-MARKDOWN_LINK = re.compile(r"(?<!!)\]\(([^)]+)\)")
+MARKDOWN_LINK = re.compile(r"\]\(([^)]+)\)")
 SENSITIVE = re.compile(rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{30,}|sk-proj-[A-Za-z0-9_-]{20,}|AKIA[A-Z0-9]{16}")
 
 
@@ -84,7 +84,12 @@ def markdown_links(text: str, source: str) -> set[str]:
         # Internal Skill references have plain relative paths. Links with
         # external URLs, fragments, or mailto are not packaged.
         link = raw.split("#", 1)[0].strip().split(' "', 1)[0]
-        if not link or re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", link):
+        if not link:
+            continue
+        scheme = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*):", link)
+        if scheme:
+            if scheme.group(1).lower() not in ("http", "https", "mailto"):
+                raise ValidationError(f"unsafe Markdown URL scheme in {source}: {link!r}")
             continue
         if link.startswith("//"):
             continue
@@ -106,7 +111,7 @@ def validate_tree(root: Path) -> dict[str, bytes]:
     if set(frontmatter) != {"name", "description"} or frontmatter["name"] != ROOT_NAME:
         raise ValidationError("frontmatter must contain exact name: output-auditor and description")
     description = frontmatter["description"]
-    if not isinstance(description, str) or not (90 <= len(description) <= 2000):
+    if not isinstance(description, str) or not (90 <= len(description) <= 1024):
         raise ValidationError("description must be a nonempty, meaningful string")
     if "audit" not in description.lower() or "do not trigger" not in description.lower():
         raise ValidationError("frontmatter description needs audit and negative-trigger scope")
@@ -153,7 +158,7 @@ def validate_tree(root: Path) -> dict[str, bytes]:
                 raise ValidationError(f"unbundled/broken reference from {rel}: {target}")
     for icon in assets:
         svg = files[icon].decode("utf-8")
-        if not svg.lstrip().startswith("<svg") or re.search(r"<script\b|<foreignObject\b|<image\b|<use\b|\bon\w+\s*=|<!DOCTYPE|\bxlink:href\s*=", svg, re.I):
+        if not svg.lstrip().startswith("<svg") or re.search(r"<script\b|<style\b|<foreignObject\b|<image\b|<use\b|\bon\w+\s*=|<!DOCTYPE|\bxlink:href\s*=|@import", svg, re.I):
             raise ValidationError(f"unexpected potentially active SVG in {icon}")
     if sum(map(len, files.values())) > MAX_BYTES:
         raise ValidationError("bundle exceeds maximum uncompressed size")
