@@ -13,11 +13,21 @@
 | P05 | YAML/metadata and ZIP-link closure | Local/CI validator checks and official available Skill Creator quick validator; host schema acceptance separate |
 | P06 | Two changed-mtime builds, identical bytes | E19 CI test, checksum + ZIP re-extraction |
 | P07–P09 | Coherent four-way verdict, authority, facets | Instructions and examples edited; behavioral compliance not inferred from text |
-| P10 | ChatGPT upload, explicit, implicit and negative host tests | **BLOCKED: requires actual ChatGPT host session and installation/preview action** |
+| P10 | ChatGPT upload, explicit, implicit and negative host tests | **PARTIAL:** user reports successful upload and supplied one real audit output; this session can load installed candidate instructions and all 11 matching references. Exact installed ZIP provenance, full trigger coverage and negative-trigger checks remain unverified |
 | P11 | Deterministic PR CI, unsafe fixtures fail | CI passes current candidate; new commits need their own CI run |
 | P12 | Same-case v1.0.1 versus candidate E01–E18 traces | **BLOCKED: host replay unavailable; do not score** |
 | P13 | All above, matching artifact SHA, protections, downloaded published bytes | **BLOCKED: NO tag/release** |
 | P14 | Actual post-release observation intake | Observation template prepared; not completed until valid release |
+
+## Candidate host observation, 2026-10-17 (NOT a scored replay)
+
+The user reports successful installation and supplied an actual ChatGPT audit report. That report identified a duplicate-ID issue in the *standalone gold-corpus* acceptance check. We reproduced that precise issue through two red regression tests and fixed it; a third test confirms the 19-recorded-results path was already rejected. The user's report is **one observational pilot**, not 18 matched benchmark traces and not proof of E01–E18 performance.
+
+Using the Skill interface exposed to this conversation, the installed entrypoint **body (after frontmatter stripping)** and all **11 references** exactly match GitHub candidate commit `412541b6dc10dc740aa70d26afa5e7cf5da12855`. The installed `agents/openai.yaml` differs only in default-prompt wrapping and `assets/icon.svg` is **not** the same artwork as the candidate source icon. Thus no claim of exact 14-file installed-byte identity or exact original ZIP provenance is warranted. A host may transform metadata/assets, or the installed Skill may have been modified; that cause was not established.
+
+The user-provided report correctly ends **INCONCLUSIVE for complete behavioral reliability**. Keep P10 explicit/implicit/negative tests and P12 baseline-versus-candidate matched replay **pending**, and never backfill `host_results.json` from the report alone.
+
+**Acceptance checker correction:** Before dictionary conversion it now requires exactly one of each preregistered E01–E22 and V01–V04 gold-case ID; the pre-fix test failed on duplicates and subsequent regression tests passed. This correction affects test/release infrastructure **only**, not the Skill ZIP.
 
 ## Exact remaining host acceptance
 
