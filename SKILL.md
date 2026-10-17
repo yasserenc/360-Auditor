@@ -88,15 +88,15 @@ For very large artifacts, return a precise patch/diff/replacement section rather
 
 ## Regression and convergence pass
 
-After correction, verify that:
+For every audit, and again after any authorized correction, check that:
 
-- every in-scope material requirement is adjudicated at the available evidence strength, with missing decisive evidence named;
-- actual authorized corrections are checked, unresolved defects are reported without pretending they were fixed;
-- fixes introduced no new material problem and components remain compatible;
-- factual claims/calculations remain supported and assumptions/uncertainty remain visible;
-- environment/version/date/jurisdiction and evidence identity/scope/freshness remain applicable;
-- tool-executed work reached the intended end state where verifiable;
-- the final output actually achieves the reconstructed contract.
+- the in-scope material obligations were adjudicated at the available evidence strength, with missing decisive proof named;
+- actual authorized corrections (if any) were checked and remaining defects were not reported as fixed;
+- any change introduced no new material problem and components remain compatible;
+- claims/calculations remain supported and assumptions/uncertainty visible;
+- environment/version/date/jurisdiction and evidence identity/scope/freshness still apply;
+- tool-executed work is reported as verified, failed, or unverified according to observed postconditions, not presumed successful;
+- the **audit report** fulfills the authorized audit objective, even where the **original target** does not meet its original contract.
 
 Do not repeatedly rerun an unchanged check as reassurance. If repeated materially equivalent fixes fail without information gain, stop speculative revision and switch to the diagnosis convergence method rather than producing another version.
 
