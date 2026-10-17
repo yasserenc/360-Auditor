@@ -197,6 +197,10 @@ def verify_archive(root: Path, archive: Path, checksum: Path | None = None) -> N
                 raise ValidationError(f"invalid ZIP file mode: {entry.filename}")
             if entry.date_time != (1980, 1, 1, 0, 0, 0) or entry.compress_type != ZIP_DEFLATED:
                 raise ValidationError(f"non-reproducible ZIP metadata: {entry.filename}")
+            # Reject forged member sizes before any decompression/extraction.
+            # ZIP archives can store enormous payloads in very few compressed bytes.
+            if entry.file_size != len(files[rel]):
+                raise ValidationError(f"ZIP member uncompressed size mismatch: {entry.filename}")
             if z.read(entry) != files[rel]:
                 raise ValidationError(f"ZIP byte mismatch: {entry.filename}")
         if z.testzip() is not None:
