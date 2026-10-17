@@ -74,6 +74,21 @@ class BundleChecks(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validate_tree(self.root)
 
+    def test_unsafe_markdown_scheme_rejected(self):
+        skill = self.root / "SKILL.md"
+        skill.write_text(skill.read_text() + "\n[Unsafe](javascript:alert(1))\n")
+        with self.assertRaises(ValidationError):
+            validate_tree(self.root)
+
+    def test_frontmatter_description_over_host_limit_rejected(self):
+        skill = self.root / "SKILL.md"
+        current = skill.read_text()
+        beginning, rest = current.split("\n---\n", 1)
+        beginning = beginning.split("\ndescription:", 1)[0]
+        skill.write_text(beginning + "\ndescription: " + ("x" * 1025) + "\n---\n" + rest)
+        with self.assertRaises(ValidationError):
+            validate_tree(self.root)
+
     def test_invalid_metadata_yaml_and_duplicate_keys(self):
         meta = self.root / "agents" / "openai.yaml"
         meta.write_text(meta.read_text() + "\ninterface: invalid-duplicate\n")
