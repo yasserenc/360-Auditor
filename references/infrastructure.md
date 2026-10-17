@@ -41,7 +41,7 @@ If decisive runtime behavior is hidden, seek an evidence bridge such as logs, me
 
 ## Command/deployment success is not outcome success
 
-A successful restart, API response, shell exit code, cloud deployment banner, or pipeline completion is an intermediate observation. Verify intended functionality, relevant health, and side effects before using **End-state verified**.
+A successful restart, API response, shell exit code, cloud deployment banner, or pipeline completion is an intermediate observation. Verify intended functionality, relevant health, and side effects before claiming the **desired end-state observation** facet.
 
 For performance/capacity claims, establish a baseline and measure before/after when feasible; do not label a configuration faster or more efficient from plausibility alone.
 
