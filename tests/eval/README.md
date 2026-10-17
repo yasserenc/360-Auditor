@@ -1,6 +1,6 @@
 # Behavioral acceptance protocol (P02/P12)
 
-[Gold corpus](cases.json) is frozen **before** editing the runtime instructions. All E01–E22 and V01–V04 are synthetic controls. There is **no** verified real historical ground truth in this corpus, and user-reported 400+ uses must not be scored as trials.
+[Gold corpus](cases.json) was originally preregistered before candidate runtime changes; four ambiguous cases were corrected after those source edits but **before any actual matched host replay**, with the prior version retained in Git history and changes explained in [ORACLE_REVIEW.md](ORACLE_REVIEW.md). All E01–E22 and V01–V04 are synthetic controls. There is **no** verified real historical ground truth in this corpus, and user-reported 400+ uses must not be scored as trials.
 
 ## Replay method
 
