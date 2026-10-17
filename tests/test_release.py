@@ -277,6 +277,16 @@ class PublicationGuardChecks(unittest.TestCase):
             with self.assertRaisesRegex(AcceptanceBlocked, "checksum changed"):
                 validate(root, archive)
 
+    def test_duplicate_recorded_case_with_nineteen_records_is_rejected(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, target, data = self._synthetic_recorded_acceptance(tmp)
+            data["cases"].append(dict(data["cases"][0]))
+            target.write_text(json.dumps(data))
+            with self.assertRaisesRegex(AcceptanceBlocked, "all E01-E18"):
+                validate(root, archive)
+
     def test_duplicate_gold_case_with_increased_count_is_rejected(self):
         from release_acceptance import AcceptanceBlocked, validate
         import json
