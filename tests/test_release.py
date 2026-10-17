@@ -194,6 +194,89 @@ class PublicationGuardChecks(unittest.TestCase):
             with self.assertRaises(AcceptanceBlocked):
                 validate(path, archive)
 
+    def _synthetic_recorded_acceptance(self, directory):
+        """SYNTHETIC schema fixture, never actual ChatGPT acceptance evidence."""
+        import hashlib
+        import json
+        root = Path(directory)
+        (root / "tests/eval/traces").mkdir(parents=True)
+        (root / "tests/eval/evidence").mkdir(parents=True)
+        shutil.copyfile(REPO / "tests/eval/cases.json", root / "tests/eval/cases.json")
+        archive = root / "skill.zip"
+        archive.write_bytes(b"synthetic archive for parsing-only tests")
+        evidence = root / "tests/eval/evidence/host.txt"
+        evidence.write_text("SYNTHETIC NON-HOST ACCEPTANCE SCHEMA EXERCISE, NOT REAL PROOF.\n")
+        gold = json.loads((root / "tests/eval/cases.json").read_text())
+        trials = []
+        for case in gold["cases"]:
+            cid = case["id"]
+            if not cid.startswith("E") or int(cid[1:]) > 18:
+                continue
+            trace_paths = {}
+            for kind in ("baseline", "candidate"):
+                p = f"tests/eval/traces/{cid}-{kind}.txt"
+                b = f"SYNTHETIC NON-HOST {cid} {kind} output for schema unit tests.\n".encode()
+                (root / p).write_bytes(b)
+                trace_paths[kind + "_trace_path"] = p
+                trace_paths[kind + "_trace_sha256"] = hashlib.sha256(b).hexdigest()
+            trials.append(dict(
+                id=cid, baseline_status="pass", candidate_status="pass",
+                candidate_observed_verdict=case["gold"]["original_target_verdict"],
+                candidate_invoked=cid != "E16", baseline_invoked=cid != "E16",
+                candidate_observables_verified=True, candidate_forbidden_seen=False,
+                candidate_authority_violation_seen=False, reviewer="synthetic-test-only",
+                host_model="synthetic-not-real", adjudicated_at="2026-10-17",
+                **trace_paths,
+            ))
+        result = {
+            "candidate_skill_sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+            "baseline_tag": "v1.0.1",
+            "chatgpt_host": {
+                "upload_accepted": True, "explicit_trigger": True,
+                "implicit_trigger": True, "negative_trigger": True,
+                "evidence_paths": ["tests/eval/evidence/host.txt"],
+            },
+            "cases": trials,
+        }
+        target = root / "tests/eval/host_results.json"
+        target.write_text(json.dumps(result, indent=2))
+        return root, archive, target, result
+
+    def test_synthetic_acceptance_schema_positive_not_real_host(self):
+        from release_acceptance import validate
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, _, _ = self._synthetic_recorded_acceptance(tmp)
+            validate(root, archive)  # Only tests schema behavior.
+
+    def test_forged_pass_with_wrong_verdict_is_rejected(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, target, data = self._synthetic_recorded_acceptance(tmp)
+            next(x for x in data["cases"] if x["id"] == "E06")["candidate_observed_verdict"] = "PASS"
+            target.write_text(json.dumps(data))
+            with self.assertRaisesRegex(AcceptanceBlocked, "disagrees with frozen gold"):
+                validate(root, archive)
+
+    def test_negative_trigger_invocation_claim_rejected(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, target, data = self._synthetic_recorded_acceptance(tmp)
+            next(x for x in data["cases"] if x["id"] == "E16")["candidate_invoked"] = True
+            target.write_text(json.dumps(data))
+            with self.assertRaisesRegex(AcceptanceBlocked, "invocation disagrees"):
+                validate(root, archive)
+
+    def test_changed_trial_trace_rejected(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, _, data = self._synthetic_recorded_acceptance(tmp)
+            p = root / data["cases"][0]["candidate_trace_path"]
+            p.write_text(p.read_text() + "tampered")
+            with self.assertRaisesRegex(AcceptanceBlocked, "checksum changed"):
+                validate(root, archive)
+
     def test_corpus_preregistered_and_complete(self):
         import json
         cases = json.loads((REPO / "tests/eval/cases.json").read_text())["cases"]
