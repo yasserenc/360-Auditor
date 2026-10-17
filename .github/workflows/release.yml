@@ -117,7 +117,7 @@ jobs:
             echo "release already exists; refusal to overwrite" >&2
             exit 1
           fi
-          if ! printf '$s\n' "${response}" | grep -Eq '^HTTP/[^ ]+ 404'; then
+          if ! printf '%s\n' "${response}" | grep -Eq '^HTTP/[^ ]+ 404'; then
             echo "cannot confirm unused version (not authenticated 404)" >&2
             exit 1
           fi
