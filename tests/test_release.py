@@ -150,6 +150,31 @@ class PublicationGuardChecks(unittest.TestCase):
         for token in ("**INCONCLUSIVE**", "`VERIFY_ONLY`", "`CORRECT_ARTIFACT`", "`EXECUTE_REMEDIATION`", "**proposed/pending**", "verification facets"):
             self.assertIn(token, skill)
 
+    def test_release_workflow_policy_and_no_script_injection(self):
+        import yaml
+        raw = (REPO / ".github/workflows/release.yml").read_text()
+        workflow = yaml.load(raw, Loader=yaml.BaseLoader)
+        self.assertNotIn("\x24{{ inputs.", raw)
+        self.assertNotIn("--clobber", raw)
+        self.assertNotIn("gh release edit", raw)
+        self.assertNotIn("gh release upload", raw)
+        self.assertEqual(workflow["permissions"]["contents"], "read")
+        self.assertEqual(workflow["jobs"]["validate"]["permissions"]["contents"], "read")
+        self.assertEqual(workflow["jobs"]["publish"]["permissions"]["contents"], "write")
+        self.assertEqual(workflow["jobs"]["publish"]["needs"], "validate")
+        self.assertFalse(any("checkout@" in step.get("uses", "") for step in workflow["jobs"]["publish"]["steps"]))
+        self.assertIn("release_acceptance.py", raw)
+        self.assertIn("--verify-tag", raw)
+
+    def test_release_gate_fails_when_host_trials_absent(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)
+            archive = path / "skill.zip"
+            archive.write_bytes(b"synthetic ZIP")
+            with self.assertRaises(AcceptanceBlocked):
+                validate(path, archive)
+
     def test_corpus_preregistered_and_complete(self):
         import json
         cases = json.loads((REPO / "tests/eval/cases.json").read_text())["cases"]
