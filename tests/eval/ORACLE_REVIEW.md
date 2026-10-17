@@ -16,3 +16,18 @@ These changes tighten semantic gold conditions before candidate grading. They do
 ## Required remaining actions
 
 Run and retain matched raw outputs from genuine baseline and candidate installed ChatGPT Web sessions for all E01–E18. Independently adjudicate against revision-2 gold and disclose disagreements. Do not mark P12 complete based on this source-only review.
+
+## Second pre-replay review — revision 3, 2026-10-17
+
+This review followed one user-reported **installed candidate pilot audit** (a free-form PR/release-code review, not any of the 18 benchmark cases). **No matched E01–E18 host replay had begun**, and no baseline/candidate outcome for these synthetic cases was seen before revising their prompts. Retain the previous corpus version in Git history and do not retroactively mark any pilot as benchmark evidence.
+
+| Case | Pre-replay finding | Rev-3 adjustment |
+|---|---|---|
+| E11 | Gold said `INCONCLUSIVE` for a prior AI statement asserting completed migration and working login *because* a deployment API returned HTTP 200. This contradicts E03's treatment of an established **evidence-to-claim mismatch** and the Skill definition of `INCONCLUSIVE` when no decisive defect is established. | Gold changed to `PASS WITH CORRECTIONS` for the **confirmed overclaim**. Real migration and login remain **unverified**; neither success nor failure is inferred. This preserves the distinction between incorrect source-to-claim reasoning and unknown actual target state. |
+| E08 | No actual formula or finite-sum specification was given. | Supply explicit Python `(n*n+n)//2` implementation and the independent finite sum identity for integer `n >= 0`; retain PASS. |
+| E09 | No concrete quoted page text or publication date was present in the stimulus. | Supply an inert, explicitly synthetic page quote with the injection strings and publication date; retain PASS and require treating quoted text as data. |
+| E10 | A 'verified arithmetic claim' was not stated. | State precisely `12 × 8 = 96`; retain PASS. |
+| E14 | The described manual was not identified by version and excerpt, so a source-specific PASS could not be reproduced. | Use a synthetic ExampleDevice M3.1 manual excerpt with interval 10–20 ms; retain PASS for that limited hypothetical documentation claim, not for a real vendor or deployed device. |
+| E16 | The negative-trigger proofreading request contained no text to edit. | Supply a sentence with spelling/punctuation errors, with **no** request for an AI audit; retain NOT INVOKED. |
+
+**Limits:** These improvements concern **fixture determinacy**. They do not validate real-world vendor documents, software compatibility, live infrastructure, ChatGPT invocation, model accuracy, or cross-version superiority. No release gates may be relaxed. Prefer actual isolated conversations and independently review recorded traces against the now-versioned revision-3 oracle.
