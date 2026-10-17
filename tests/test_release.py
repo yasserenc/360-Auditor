@@ -277,6 +277,30 @@ class PublicationGuardChecks(unittest.TestCase):
             with self.assertRaisesRegex(AcceptanceBlocked, "checksum changed"):
                 validate(root, archive)
 
+    def test_duplicate_gold_case_with_increased_count_is_rejected(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, _, _ = self._synthetic_recorded_acceptance(tmp)
+            path = root / "tests/eval/cases.json"
+            data = json.loads(path.read_text())
+            data["cases"].append(dict(data["cases"][0]))
+            path.write_text(json.dumps(data))
+            with self.assertRaisesRegex(AcceptanceBlocked, "duplicate|incomplete"):
+                validate(root, archive)
+
+    def test_duplicate_gold_case_with_unchanged_count_is_rejected(self):
+        from release_acceptance import AcceptanceBlocked, validate
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            root, archive, _, _ = self._synthetic_recorded_acceptance(tmp)
+            path = root / "tests/eval/cases.json"
+            data = json.loads(path.read_text())
+            data["cases"][-1] = dict(data["cases"][0])
+            path.write_text(json.dumps(data))
+            with self.assertRaisesRegex(AcceptanceBlocked, "duplicate|incomplete"):
+                validate(root, archive)
+
     def test_corpus_preregistered_and_complete(self):
         import json
         cases = json.loads((REPO / "tests/eval/cases.json").read_text())["cases"]
