@@ -64,6 +64,12 @@ def safe_relative(path: str) -> str:
 def source_bytes(root: Path, rel: str) -> bytes:
     safe_relative(rel)
     file = root / rel
+    # Prevent source paths from escaping through a symlinked parent directory.
+    current = root
+    for part in PurePosixPath(rel).parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValidationError(f"symlinked bundle path component: {rel}")
     if not file.is_file() or file.is_symlink():
         raise ValidationError(f"missing or symlinked bundle file: {rel}")
     data = file.read_bytes()
