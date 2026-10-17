@@ -18,16 +18,16 @@ Follow this sequence:
 5. **Route to relevant domain guidance.** Load only the reference files that materially apply; see **Domain routing**.
 6. **Audit and verify.** Check requirements, evidence, internal consistency, failure modes, component interactions, and domain-specific concerns. Challenge realistic failure conditions, not remote hypotheticals. Prefer a discriminating check over extra speculation.
 7. **Classify findings.** Use only the defined finding classes below. Adversarial suspicion, reviewer disagreement, or missing evidence is not by itself a Confirmed Defect.
-8. **Correct minimally.** Preserve correct content and valid constraints. Every material correction must trace to a Confirmed Defect, an explicit requirement, or an evidence-supported Optional Improvement. Do not redesign or refactor unrelated material.
-9. **Verify the corrected result.** Recheck the contract and regressions. For tool-executed or mutable-state work, verify the exact resulting/end state when access and authority permit; bind evidence to the state it actually observed.
-10. **Report and stop.** Stop when material requirements are checked, confirmed defects are fixed, regression checks pass, unresolved material uncertainty is disclosed, and another iteration would add no meaningful evidence or only cosmetic/speculative change.
+8. **Select an authorized path and correct minimally.** `VERIFY_ONLY` reports findings and possible corrections without changing the target; `CORRECT_ARTIFACT` changes only an authorized artifact/copy; `EXECUTE_REMEDIATION` changes an external system only when the particular consequential action is separately authorized. Audit instructions do not escalate permission. Preserve correct content; do not redesign unrelated material.
+9. **Verify changes at the scope performed.** For corrections actually made, recheck the contract and regressions. Distinguish attempted changes from observed postconditions; do not label proposals as implemented.
+10. **Report and stop.** Stop when the authorized audit objective is met and the verdict, evidence limits, findings, action state, and remaining work are reported. Known defects with pending or forbidden remediation do **not** prevent completion of a read-only audit. Avoid unchanged retries when they add no new evidence.
 
 ## Evidence invariants
 
 - Never make a material correctness, causality, freshness, or success claim stronger than the evidence actually obtained.
 - Match evidence to the exact claim, target identity/state, scope, version, time, environment, jurisdiction, and population as applicable.
 - Treat prior AI summaries, success messages, reported command results, and reviewer opinions as claims until independently supported. A passing command/test proves only the behavior and state it actually covered.
-- Prefer the strongest evidence layer relevant to the claim: actual target behavior/state for runtime claims; authoritative version-matched sources for specifications; independent recomputation for calculations; appropriate primary evidence for current facts.
+- Select independent **verification facets** appropriate to each exact claim, not a single ranked ladder: static artifact inspection; authoritative/source verification; independent computation; execution/test observation; environment/current-state observation; and actual desired end-state observation. Record which facets were obtained and what each does **not** prove. No facet universally subsumes another.
 - Documentation can establish supported behavior; it does not prove the actual target is configured or behaving that way. Static inspection can establish artifact properties; it does not prove unobserved runtime behavior.
 - For mutable targets, stale evidence does not prove current state. Record or preserve enough identity/time/version information to know what was actually verified.
 - If decisive runtime state is hidden, seek or propose an evidence bridge such as a log, metric, trace, health check, read-only query, reproduction, or externally observable behavior instead of pretending static evidence proves it.
@@ -36,7 +36,7 @@ Follow this sequence:
 
 If a material claim cannot be established, say exactly **“I cannot confirm this.”** Then state what evidence, access, or test would resolve it.
 
-Never fabricate tests, executions, tool access, environment inspection, citations, successful changes, source verification, or certainty. Accurately label the strongest verification level actually achieved: **Statically reviewed**, **Source verified**, **Recomputed**, **Executed/tested**, **Environment verified**, or **End-state verified**.
+Never fabricate tests, executions, tool access, environment inspection, citations, successful changes, source verification, or certainty. Report **claim-scoped verification facets** actually observed: **Static artifact inspection**, **Authoritative/source check**, **Independent recomputation**, **Execution/test**, **Environment observation**, and **Desired end-state observation**. A source check does not prove deployment; an HTTP 200 does not prove functionality; a recalculation does not prove actual measured inputs.
 
 ## Universal defect scan
 
@@ -76,19 +76,22 @@ For each material finding, state the problem, evidence or concise justification,
 
 ## Correction and authority boundaries
 
-The audit request authorizes inspection, analysis, verification, correction of the output/artifact, and relevant read-only or non-destructive checks when tools are available and governing instructions permit them.
+Select exactly the authority the user actually granted; the labels below describe boundaries, not commands that confer permission:
 
-It does **not** by itself authorize production modifications, deployments, deletion, purchases, external communications, destructive changes, or other consequential actions. Obtain separate authorization where required.
+- **`VERIFY_ONLY`**: inspect, analyze, perform authorized read-only/non-destructive checks, and report findings, suggested patches, and exact missing proof. No target mutation. A completed audit with a proven defect can stop with remediation pending.
+- **`CORRECT_ARTIFACT`**: when authorized to revise the specified answer, document or file, make minimum changes to that artifact or a clearly labeled corrected copy, then recheck. Publishing a suggested correction is not evidence that the original artifact was changed.
+- **`EXECUTE_REMEDIATION`**: only when separately authorized for the concrete external action, safely change the named target and independently check the relevant postcondition. Production changes, deployments, deletion, purchases, external communications, and other consequential actions are not implied by an audit request.
 
-For very large artifacts, return an exact patch, diff, replacement section, changed file, command set, or equivalent precise correction instead of reproducing the entire artifact; state briefly why.
+Track **remediation state separately from the original-target verdict**: **not required**, **proposed/pending**, **applied but unverified**, or **verified**. The state must describe observed action and evidence, not the verdict label. A **Verification-Dependent Risk** alone does not justify speculative modification.
 
-A **Verification-Dependent Risk** does not justify speculative modification. Preserve correct material rather than rewriting it for appearance.
+For very large artifacts, return a precise patch/diff/replacement section rather than duplicating an entire artifact; say when a proposed patch remains unapplied.
 
 ## Regression and convergence pass
 
 After correction, verify that:
 
-- every material requirement is satisfied and every Confirmed Defect is fixed;
+- every in-scope material requirement is adjudicated at the available evidence strength, with missing decisive evidence named;
+- actual authorized corrections are checked, unresolved defects are reported without pretending they were fixed;
 - fixes introduced no new material problem and components remain compatible;
 - factual claims/calculations remain supported and assumptions/uncertainty remain visible;
 - environment/version/date/jurisdiction and evidence identity/scope/freshness remain applicable;
@@ -102,16 +105,23 @@ Do not repeatedly rerun an unchanged check as reassurance. If repeated materiall
 Scale detail to risk and complexity. For simple valid targets, keep the audit very short.
 
 ### A. Audit Verdict
-The verdict applies to the target **as received, before corrections**. Use exactly one: **PASS — no material correction required**, **PASS WITH CORRECTIONS — fundamentally sound, but justified corrections were required**, or **FAIL — material defects made the original target unreliable or unsuitable without substantial correction**. Optional Improvements alone do not make a PASS become PASS WITH CORRECTIONS. Add one short explanation.
+The verdict always describes the **original target as received**, never whether remediation was completed. Select exactly one:
+
+- **PASS** — all relevant material obligations are supported by adequate evidence; no material correction is warranted. Peripheral unknowns outside the adjudicated claim do not block PASS.
+- **PASS WITH CORRECTIONS** — an otherwise fit-for-purpose target has established material errors that are reasonably correctable; **not** a claim that corrections were applied. Report their remediation state separately.
+- **FAIL** — decisive established material defects make the original target unsuitable or unreliable without substantial correction, regardless of other unknown evidence.
+- **INCONCLUSIVE** — decisive evidence for the requested judgment is missing and no established defect already settles that judgment. Name each material missing proof and the narrowest verification bridge. Report established partial facts without converting lack of evidence into a defect.
+
+Optional Improvements alone never downgrade PASS. A confirmed issue plus unrelated missing information does not force INCONCLUSIVE; if the missing evidence could change the material disposition, state that scope explicitly rather than inventing a complete outcome.
 
 ### B. Findings
 Report only genuine findings. If none exist, say so. For material findings include type, severity when useful, problem, evidence, impact, and correction.
 
 ### C. Verification Performed
-State exactly what was inspected, researched/source-verified, recomputed, executed/tested, environment-verified, or end-state-verified. Cite authoritative sources for material external verification. For complex/high-risk audits, expose a compact claim/evidence table when it materially helps; otherwise keep it internal. Disclose any material verification gap.
+For each material claim, name the **applicable verification facets** actually checked (static inspection, source, computation, execution, environment, desired end state), their target/version/time and scope, and unobserved facets that matter to the conclusion. These are not ranked levels. Cite authoritative sources for external checks; never promote a passing build/API response into unobserved end-state success. Use a compact claim/evidence table for complex cases when useful.
 
-### D. Corrected Final Output
-Return the corrected result ready to use. Do not force manual merging. If no correction is required, state that the original result stands instead of needlessly rewriting it. Apply the large-artifact exception when needed.
+### D. Corrected Output / Proposed Remediation
+When artifact correction is authorized, provide the corrected result or exact patch and verify what changed. When only verification is authorized, report a proposed correction without modifying the original and say **proposed/pending**. Do not force manual merging for authorized small text corrections. If no correction is required, preserve the original.
 
-### E. Residual Risks / Uncertainties
-List only material unresolved items. For an unverifiable material claim use **“I cannot confirm this.”** and state the resolving evidence/test/access. If none remain, say **“No known material issues remain after the final verification pass.”**
+### E. Remediation State and Residual Uncertainty
+Report **not required / proposed/pending / applied but unverified / verified**, with evidence where applied. Distinguish audit completion from remediation completion. For material unknowns state **“I cannot confirm this.”** and the needed check/access. Say no known material issues remain only for the scope actually supported; stop without forcing remediation.
