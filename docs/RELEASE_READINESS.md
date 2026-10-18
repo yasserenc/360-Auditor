@@ -4,7 +4,7 @@
 
 ## Required order and evidence
 
-| Plan | Evidence required | Actual status as of 2026-10-17 |
+| Plan | Evidence required | Actual status as of 2026-10-18 |
 |---|---|---|
 | P01 | Main and v1.0.1 immutable IDs, manifest, release digests | Recorded in [BASELINE.md](BASELINE.md); historic download bytes not independently verified |
 | P02 | Preregister E01–E22 and variants | [Versioned synthetic oracles, revision 3](../tests/eval/cases.json) and [pre-replay change log](../tests/eval/ORACLE_REVIEW.md); historical real cases unavailable |
@@ -12,10 +12,10 @@
 | P04 | Exact tag/ref source and non-overwrite | CI guard and publish refusal; repository-wide immutable release setting not established |
 | P05 | YAML/metadata and ZIP-link closure | Local/CI validator checks and official available Skill Creator quick validator; host schema acceptance separate |
 | P06 | Two changed-mtime builds, identical bytes | E19 CI test, checksum + ZIP re-extraction |
-| P07–P09 | Coherent four-way verdict, authority, facets | Instructions and examples edited; behavioral compliance not inferred from text |
-| P10 | ChatGPT upload, explicit, implicit and negative host tests | **PARTIAL:** user reports successful upload and supplied one real audit output; this session can load installed candidate instructions and all 11 matching references. Exact installed ZIP provenance, full trigger coverage and negative-trigger checks remain unverified |
-| P11 | Deterministic PR CI, unsafe fixtures fail | CI passes current candidate; new commits need their own CI run |
-| P12 | Same-case v1.0.1 versus candidate E01–E18 traces | [Exact P10/P12 host replay runbook](../tests/eval/HOST_REPLAY_RUNBOOK.md) prepared. **BLOCKED: matched real-host traces and independent adjudication not yet supplied; do not score** |
+| P07–P09 | Coherent four-way verdict, authority, facets | Source updated with focused E03/E06/E11 distinction after user-reported E03 verdict error; **new runtime behavior not host-retested** |
+| P10 | ChatGPT upload, explicit, implicit and negative host tests | **PARTIAL on earlier candidate:** user reports installation and six case responses; exact invocation, version-specific provenance and the new runtime candidate's host acceptance remain unverified |
+| P11 | Deterministic PR CI, unsafe fixtures fail | 34 deterministic tests passed on source+test correction commit e5aa93a; docs updates require a fresh run at final HEAD |
+| P12 | Same-case v1.0.1 versus candidate E01–E18 traces | Prior unpaired user-provided E03 response mismatched frozen verdict, 5 other response-content checks matched; **BLOCKED:** no matched v1.0.1/v2 host traces and no retest of patched candidate |
 | P13 | All above, matching artifact SHA, protections, downloaded published bytes | **BLOCKED: NO tag/release** |
 | P14 | Actual post-release observation intake | Observation template prepared; not completed until valid release |
 
@@ -28,6 +28,16 @@ Using the Skill interface exposed to this conversation, the installed entrypoint
 The user-provided report correctly ends **INCONCLUSIVE for complete behavioral reliability**. Keep P10 explicit/implicit/negative tests and P12 baseline-versus-candidate matched replay **pending**, and never backfill `host_results.json` from the report alone.
 
 **Acceptance checker correction:** Before dictionary conversion it now requires exactly one of each preregistered E01–E22 and V01–V04 gold-case ID; the pre-fix test failed on duplicates and subsequent regression tests passed. This correction affects test/release infrastructure **only**, not the Skill ZIP.
+
+## Candidate response observation and narrowly scoped correction — 2026-10-18
+
+The user supplied **six candidate ChatGPT response texts**, without independently visible Skill-invocation/version records or paired baseline sessions. Their response-content assessments: E02 explicit correct, E02 implicit correct, E16 ordinary proofreading correct, E05 FAIL correct, E06 INCONCLUSIVE correct, and **E03 INCONCLUSIVE mismatched** the frozen revision-3 gold PASS WITH CORRECTIONS. The E03 output recognized the source-to-claim mismatch and offered a correction, but selected INCONCLUSIVE because actual v5 support was unknown. This is a **reported verdict-selection mismatch**, not proof of v5 incompatibility and not a general accuracy measurement.
+
+**Focused runtime revision:** The candidate SKILL.md now explicitly distinguishes (a) an original answer's demonstrably invalid use of old-version/indirect evidence as *proof* of a stronger claim, which is a correctable reasoning defect even if external truth is unknown (E03, E11), from (b) a prior success report that cannot be inspected, with no demonstrated defect (E06). One static contract test was added; **34/34 deterministic CI tests pass** for commit e5aa93a7af18beda27fecb22626b367f319ff371. This is a targeted hypothesis-driven source correction; **not a validated behavioral fix**.
+
+**Runtime artifact identity changed.** The previous pilot candidate ZIP SHA-256 was 3ab00fcd365a89d03374ec3b48b9ccfba6f3b598767cce111ea2156d8e2e6ec6; the revised ZIP SHA-256 is f1bd8fd476c253f461800435bd5d8b40195258d9581fb7c266f732f6b4102ebd, reproduced by local packaging and [GitHub CI](https://github.com/yasserenc/360-Auditor/actions/runs/39105237081). Exactly one runtime member changed: output-auditor/SKILL.md. The older user outputs cannot certify the revised ZIP; it has **not** been independently accepted or replayed in ChatGPT Web. Do not copy earlier host evidence into host_results.json for the revised archive.
+
+**Release gates remain BLOCKED.** The user's stated preference is to avoid manually running the remaining cases. The available tools cannot initiate fresh authenticated ChatGPT Web test sessions or observe Skill invocation; without that evidence, stop rather than claiming a passing E01–E18 benchmark. Do not merge/tag/release.
 
 ## Exact remaining host acceptance
 
