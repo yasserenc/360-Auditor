@@ -1,6 +1,6 @@
 # ChatGPT host acceptance and matched replay kit — E01–E18
 
-**Status: NOT RUN.** This is an operator-facing stimulus pack, **not** test evidence, a report of completed cases, a release approval, or an automatic test runner. Compiled from [revision-3 synthetic cases](cases.json) before any E01–E18 matched host run; prior oracle changes are disclosed in [ORACLE_REVIEW.md](ORACLE_REVIEW.md). Never record `pass` from possession of this file.
+**Status: MATCHED HOST REPLAY NOT RUN.** This is an operator-facing stimulus pack, **not** proof of passed trials, a release approval, or an automatic test runner. Six unpaired user-reported response texts from the preceding runtime candidate include an E03 verdict mismatch; no matched v1.0.1/v2.0.0 E01–E18 replays exist. Compiled from [revision-3 synthetic cases](cases.json); prior oracle revisions are disclosed in [ORACLE_REVIEW.md](ORACLE_REVIEW.md). Never record `pass` from possession of this file or reuse old responses for a new runtime ZIP.
 
 ## Why this pack exists
 
@@ -295,6 +295,6 @@ For every run, record `case_id`, `baseline_or_candidate`, `host`, `model`, `inst
 
 When the independent rubric cannot be evaluated (e.g. missing the required host signal), record **UNVERIFIED**, not PASS. In particular, E08/E09/E14 are self-contained *synthetic* source/logic checks, not tests of real vendor manuals or live servers. E15 requires the special 3-turn setup. A passing offline fixture does not show the Skill can execute safe fixes in production.
 
-Candidate runtime `skill.zip` SHA-256 (pre-replay): `3ab00fcd365a89d03374ec3b48b9ccfba6f3b598767cce111ea2156d8e2e6ec6`. Baseline: published `v1.0.1`. For audit provenance, retain tested host identity and version for both.
+**Revised candidate runtime** `skill.zip` SHA-256 (not yet host-accepted): `f1bd8fd476c253f461800435bd5d8b40195258d9581fb7c266f732f6b4102ebd`. Earlier user-observed pilot responses correspond to the pre-patch candidate (`3ab00fcd365a89d03374ec3b48b9ccfba6f3b598767cce111ea2156d8e2e6ec6`) and cannot be counted as acceptance of these new bytes. Baseline remains published `v1.0.1`. Retain observed host identity, revision and raw response for each genuine run.
 
 **Stop boundary:** This runbook does not authorize publishing. Missing authentic host evidence, failing candidate cases, unknown invocation, missing release immutability, or unclear model equivalence remain blockers for P13.
