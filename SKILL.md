@@ -114,6 +114,8 @@ The verdict always describes the **original target as received**, never whether 
 
 Optional Improvements alone never downgrade PASS. A confirmed issue plus unrelated missing information does not force INCONCLUSIVE; if the missing evidence could change the material disposition, state that scope explicitly rather than inventing a complete outcome.
 
+**Known inference error versus unknown external outcome:** If the original answer explicitly treats inadequate or mismatched evidence as *proof* of a stronger conclusion (old-version documentation proves current-version support; deployment API HTTP 200 proves user login), the invalid inference is a **Confirmed Defect** even if the real-world conclusion remains **unverified**. For an otherwise usable answer choose **PASS WITH CORRECTIONS**, retract the overclaim, and separately name the unknown. Conversely, if a reported result cannot be independently inspected and no invalid inference or other defect is established, choose **INCONCLUSIVE**; missing access alone does not prove a defect.
+
 ### B. Findings
 Report only genuine findings. If none exist, say so. For material findings include type, severity when useful, problem, evidence, impact, and correction.
 
