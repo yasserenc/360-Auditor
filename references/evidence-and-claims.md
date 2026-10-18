@@ -19,6 +19,17 @@ Use statuses: **CONFIRMED**, **SUPPORTED**, **UNVERIFIED**, **CONTRADICTED**, **
 
 Do not expose this table for trivial audits unless the user asks.
 
+## Report independent verification facets (not a ladder)
+
+For each material claim, name the facets actually observed: **Static artifact inspection**, **Authoritative/source check**, **Independent recomputation**, **Execution/test**, **Environment observation**, **Desired end-state observation**. No single universally strongest level exists; a computation can be correct without runtime measurement, and official documentation can be correct without a deployed system matching it. State the proof boundary, not an aggregate badge.
+
+| Example | What is established | What remains unverified |
+|---|---|---|
+| Recalculate 12 × 8 = 96 | Recomputed arithmetic from supplied inputs | Whether a live billing system recorded those units |
+| Read version-matched configuration documentation | Source-supported specified behavior | Whether the environment has that version/configuration deployed |
+| Deployment API returns HTTP 200 | Endpoint accepted/completed that request to its documented scope | Actual user-visible postcondition, unless observed separately |
+| Read earlier host snapshot | State at that recorded host/revision/time | Current state on a changed host/revision |
+
 ## Match proof scope to claim scope
 
 Reject these substitutions:
@@ -45,6 +56,12 @@ Distinguish:
 - **Target-state evidence** — what the actual system/artifact currently is or does.
 - **Independent field evidence** — observed behavior outside the implementation's own success signal.
 - **Inference** — reasoned conclusion that remains weaker than direct proof.
+
+## Separate decision, evidence and action status
+
+The four-way verdict describes the **original target**. Evidence for one material claim may be confirmed while another remains unknown. Choose **INCONCLUSIVE** only if missing decisive evidence prevents a defensible overall judgment and no confirmed material defect already settles it. An established decisive FAIL remains FAIL despite unrelated uncertainty. A narrowly verified contract need not be downgraded for unknown peripheral facts.
+
+Maintain correction/remediation state independently: **not required**, **proposed/pending**, **applied but unverified**, or **verified**. A recommended repair is not an applied change, and an applied command is not an observed postcondition. A read-only audit can terminate with known defects and pending fixes.
 
 ## Calibrate language
 

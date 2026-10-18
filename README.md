@@ -2,7 +2,7 @@
 
 **360° Output Auditor** is a reusable ChatGPT Skill for independently auditing, verifying, correcting, and revalidating an existing AI-produced output or completed AI-performed task.
 
-It is designed as a **second-pass quality gate**: reconstruct the original contract, verify material claims against the strongest available evidence, distinguish intermediate success from the actual desired end state, correct only justified defects, regression-check the result, and preserve uncertainty when proof is unavailable.
+It is designed as a **second-pass quality gate**: reconstruct the original contract, verify material claims using the applicable independent evidence facets, distinguish intermediate success from the desired end state, correct only justified defects when authorized, and report unresolved material uncertainty without inventing a verdict.
 
 ## What it is for
 
@@ -66,9 +66,9 @@ The Skill follows a compact control-plane workflow:
    - **Confirmed Defect**
    - **Verification-Dependent Risk**
    - **Optional Improvement**
-8. make the minimum complete correction;
-9. reverify the corrected result and check regressions;
-10. stop when further iteration would add no meaningful evidence.
+8. select an authorized verification/correction/remediation path and make minimum warranted changes;
+9. independently verify actual changes at the observed scope;
+10. stop when the authorized audit is complete, even if external remediation remains pending.
 
 For unverifiable material claims, the Skill uses the explicit wording:
 
@@ -76,28 +76,20 @@ For unverifiable material claims, the Skill uses the explicit wording:
 
 and identifies the evidence, access, or test needed to resolve the uncertainty.
 
-## Verification levels
+## Verification facets
 
-The Skill distinguishes the strongest verification level actually achieved:
-
-- **Statically reviewed**
-- **Source verified**
-- **Recomputed**
-- **Executed/tested**
-- **Environment verified**
-- **End-state verified**
-
-This prevents a static review, successful command, test result, or deployment message from being presented as proof of a broader state than it actually establishes.
+Verification is **claim-scoped**, not an ordered ladder. Report only observed facets: **static artifact inspection**, **authoritative/source check**, **independent recomputation**, **execution/test**, **environment observation**, and **desired end-state observation**. For example, recomputing a formula proves its arithmetic under supplied inputs but not live measurements; HTTP 200 proves only the observed API response, not the desired user-facing result.
 
 ## Verdicts
 
 The audit verdict applies to the **original target as received**, before corrections:
 
-- **PASS — no material correction required**
-- **PASS WITH CORRECTIONS — fundamentally sound, but justified corrections were required**
-- **FAIL — material defects made the original target unreliable or unsuitable without substantial correction**
+- **PASS** — material obligations have adequate evidence and no material correction is needed.
+- **PASS WITH CORRECTIONS** — established correctable material defects in an otherwise fit-for-purpose result; corrections may still be pending.
+- **FAIL** — established decisive material defects make the target unsuitable without substantial change.
+- **INCONCLUSIVE** — missing decisive evidence prevents a defensible judgment, and no already-confirmed defect settles it. State the exact proof bridge.
 
-Optional improvements alone do not downgrade a PASS.
+A separate remediation state is **not required**, **proposed/pending**, **applied but unverified**, or **verified**. The four verdicts apply only to the original target. Optional improvements alone do not downgrade a PASS.
 
 ## Installation / reuse
 
@@ -180,11 +172,13 @@ Repository documentation files such as `README.md`, `LICENSE`, `CHANGELOG.md`, a
 
 Successful Skill installation does not by itself prove implicit-trigger precision or end-to-end behavior on every future model/runtime configuration. Runtime behavior should be periodically exercised with representative positive, negative-trigger, missing-access, and high-risk cases.
 
-## Versioning
+## Versioning and compatibility
 
-The repository follows semantic versioning for public releases.
+The next candidate is **v2.0.0** (not released until host and behavioral gates pass). Its fourth verdict `INCONCLUSIVE` changes the three-enum v1.x output contract: integrations expecting exactly `PASS / PASS WITH CORRECTIONS / FAIL` must accept the fourth value and read remediation state separately. Do not treat this branch or any generated ZIP as an official release until publication gates pass. v1.0.1 remains available for rollback.
 
-See [CHANGELOG.md](CHANGELOG.md) for user-facing changes.
+ChatGPT Web is the primary intended host. The existing v1.0.1 source matched one installed ChatGPT Skill in the historical audit, but **candidate upload, explicit/implicit invocation, and end-to-end behavior are not yet tested**. Codex, Atlas and API support are unverified and are not claimed as tested solely because optional metadata names them. See [host acceptance protocol](tests/eval/README.md).
+
+The repository follows semantic versioning for public releases. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

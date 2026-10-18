@@ -4,8 +4,8 @@ interface:
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
   default_prompt: Use $output-auditor to independently audit the target, verify material
-    claims and end state where possible, correct justified defects, regression-check
-    the result, and return the revalidated final output.
+    claims and end state where possible, propose or apply justified corrections
+    only when authorized, regression-check actual changes, and report evidence limits.
 policy:
   allow_implicit_invocation: true
   products:
