@@ -164,6 +164,22 @@ class PublicationGuardChecks(unittest.TestCase):
             verify_identity("v2.0.0", "refs/heads/main", "branch", a, a, a)
         verify_identity("v2.0.0", "refs/tags/v2.0.0", "tag", a, a, a)
 
+    def test_known_inference_error_vs_unknown_outcome_contract_static_only(self):
+        # Static guard only: does NOT prove LLM behavior on E03/E06/E11.
+        import json
+        skill = (REPO / "SKILL.md").read_text()
+        cases = json.loads((REPO / "tests/eval/cases.json").read_text())["cases"]
+        gold = {case["id"]: case["gold"]["original_target_verdict"] for case in cases}
+        self.assertEqual(gold["E03"], "PASS WITH CORRECTIONS")
+        self.assertEqual(gold["E06"], "INCONCLUSIVE")
+        self.assertEqual(gold["E11"], "PASS WITH CORRECTIONS")
+        for required in (
+            "Known inference error versus unknown external outcome",
+            "invalid inference is a **Confirmed Defect**",
+            "missing access alone does not prove a defect",
+        ):
+            self.assertIn(required, skill)
+
     def test_runtime_contract_static_guards_only(self):
         skill = (REPO / "SKILL.md").read_text()
         for token in ("**INCONCLUSIVE**", "`VERIFY_ONLY`", "`CORRECT_ARTIFACT`", "`EXECUTE_REMEDIATION`", "**proposed/pending**", "verification facets"):
